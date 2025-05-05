@@ -12,6 +12,7 @@
 */
 
 #include <raylib.h>
+#include <raymath.h>
 #include <deque>
 
 using namespace std;
@@ -25,9 +26,22 @@ int cellCount = 25;
 int screenWidth = cellSize * cellCount;
 int screenHeight = cellSize * cellCount;
 
+double lastUpdateTime = 0;
+
+bool eventTriggered(double interval) {
+	double currentTime = GetTime();
+	if (currentTime - lastUpdateTime >= interval) {
+		lastUpdateTime = currentTime;
+		return true;
+	} else {
+		return false;
+	}
+}
+
 class Snake {
 public:
 	deque<Vector2> body = { Vector2{ 6, 9 }, Vector2{ 5, 9 }, Vector2{ 4, 9 } };
+	Vector2 direction = { 1, 0 };
 
 	void Draw() {
 		for (int i = 0; i < body.size(); i++) {
@@ -36,6 +50,12 @@ public:
 			Rectangle segment = Rectangle{ x * cellSize, y * cellSize, (float)cellSize, (float)cellSize };
 			DrawRectangleRounded(segment, 0.5, 6, SNEK_DARKGREEN);
 		}
+	}
+
+	void Update() {
+		body.pop_back(); // remove last segment of snake body
+		Vector2 newBodySegment = Vector2Add(body[0], direction); // new segment in direction of movement
+		body.push_front(newBodySegment); // add new segment to beginning of the list
 	}
 };
 
@@ -67,22 +87,55 @@ public:
 	}
 };
 
+class Game {
+public:
+	Snake snake = Snake();
+	Food food = Food();
+
+	void Draw() {
+		snake.Draw();
+		food.Draw();
+	}
+
+	void Update() {
+		snake.Update();
+	}
+};
+
 int main() {
 	
 	InitWindow(screenWidth, screenHeight, "Snek");
 
 	SetTargetFPS(60);
 
-	Food food = Food();
-	Snake snake = Snake();
+	Game game = Game();
 
 	while(!WindowShouldClose()) {
 		BeginDrawing();
 
-		ClearBackground(SNEK_GREEN);
+		if (eventTriggered(0.2)) {
+			game.Update();
+		}
 
-		food.Draw();
-		snake.Draw();
+		if (IsKeyPressed(KEY_UP) && game.snake.direction.y != 1) {
+			game.snake.direction = { 0, -1 };
+		}
+
+		if (IsKeyPressed(KEY_DOWN) && game.snake.direction.y != -1) {
+			game.snake.direction = { 0, 1 };
+		}
+
+		if (IsKeyPressed(KEY_LEFT) && game.snake.direction.x != 1) {
+			game.snake.direction = { -1, 0 };
+		}
+
+		if (IsKeyPressed(KEY_RIGHT) && game.snake.direction.x != -1) {
+			game.snake.direction = { 1, 0 };
+		}
+
+		// Drawing
+		ClearBackground(SNEK_GREEN);
+		game.Draw();
 
 		EndDrawing();
 	}
