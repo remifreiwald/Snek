@@ -23,8 +23,9 @@ Color SNEK_DARKGREEN = { 43, 51, 24, 255 };
 // grid for 750x750 pixels
 int cellSize = 30;
 int cellCount = 25;
-int screenWidth = cellSize * cellCount;
-int screenHeight = cellSize * cellCount;
+int offset = 75;
+int screenWidth = cellSize * cellCount + 2 * offset;
+int screenHeight = cellSize * cellCount + 2 * offset;
 
 double lastUpdateTime = 0;
 
@@ -61,7 +62,7 @@ public:
 		for (int i = 0; i < body.size(); i++) {
 			float x = body[i].x;
 			float y = body[i].y;
-			Rectangle segment = Rectangle{ x * cellSize, y * cellSize, (float)cellSize, (float)cellSize };
+			Rectangle segment = Rectangle{ x * cellSize + offset, y * cellSize + offset, (float)cellSize, (float)cellSize };
 			DrawRectangleRounded(segment, 0.5, 6, SNEK_DARKGREEN);
 		}
 	}
@@ -106,7 +107,7 @@ public:
 	}
 
 	void Draw() {
-		DrawTexture(texture, position.x * cellSize, position.y * cellSize, WHITE);
+		DrawTexture(texture, position.x * cellSize + offset, position.y * cellSize + offset, WHITE);
 	}
 
 	Vector2 GenerateRandomCell() {
@@ -211,6 +212,7 @@ int main() {
 
 		// Drawing
 		ClearBackground(SNEK_GREEN);
+		DrawRectangleLinesEx(Rectangle{ (float)offset - 5, (float)offset - 5, (float)cellSize * cellCount + 10, (float)cellSize * cellCount + 10 }, 5, SNEK_DARKGREEN);
 		game.Draw();
 
 		EndDrawing();
