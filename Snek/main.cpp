@@ -49,8 +49,13 @@ bool elementInDeque(Vector2 element, deque<Vector2> deque) {
 
 class Snake {
 public:
-	deque<Vector2> body = { Vector2{ 6, 9 }, Vector2{ 5, 9 }, Vector2{ 4, 9 } };
-	Vector2 direction = { 1, 0 };
+	deque<Vector2> body;
+	Vector2 direction;
+	bool addSegment = false;
+
+	Snake() {
+		Reset();
+	}
 
 	void Draw() {
 		for (int i = 0; i < body.size(); i++) {
@@ -62,9 +67,24 @@ public:
 	}
 
 	void Update() {
-		body.pop_back(); // remove last segment of snake body
-		Vector2 newBodySegment = Vector2Add(body[0], direction); // new segment in direction of movement
-		body.push_front(newBodySegment); // add new segment to beginning of the list
+		// create a new segment in the direction of movement
+		Vector2 newBodySegment = Vector2Add(body[0], direction);
+
+		// add the new segment to the beginning of the list
+		body.push_front(newBodySegment);
+
+		if (addSegment) {
+			// we added the segment, that's it
+			addSegment = false;
+		} else {
+			// just move the snake, but don't make it longer, so remove the last segment
+			body.pop_back();
+		}
+	}
+
+	void Reset() {
+		body = { Vector2{ 6, 9 }, Vector2{ 5, 9 }, Vector2{ 4, 9 } };
+		direction = { 1, 0 };
 	}
 };
 
@@ -108,6 +128,7 @@ class Game {
 public:
 	Snake snake = Snake();
 	Food food = Food(snake.body);
+	bool running = true;
 
 	void Draw() {
 		snake.Draw();
@@ -115,14 +136,41 @@ public:
 	}
 
 	void Update() {
-		snake.Update();
-		CheckCollisionWithFood();
+		if (running) {
+			snake.Update();
+			CheckCollisionWithFood();
+			CheckCollisionWithEdges();
+			CheckCollisionWithTail();
+		}
 	}
 
 	void CheckCollisionWithFood() {
 		if (Vector2Equals(snake.body[0], food.position)) {
 			food.position = food.GenerateRandomPos(snake.body);
+			snake.addSegment = true;
 		}
+	}
+
+	void CheckCollisionWithEdges() {
+		if (snake.body[0].x >= cellCount || snake.body[0].x <= -1) {
+			GameOver();
+		} else if (snake.body[0].y >= cellCount || snake.body[0].y <= -1) {
+			GameOver();
+		}
+	}
+
+	void CheckCollisionWithTail() {
+		deque<Vector2> headlessBody = snake.body;
+		headlessBody.pop_front();
+		if (elementInDeque(snake.body[0], headlessBody)) {
+			GameOver();
+		}
+	}
+
+	void GameOver() {
+		snake.Reset();
+		food.position = food.GenerateRandomPos(snake.body);
+		running = false;
 	}
 };
 
@@ -143,18 +191,22 @@ int main() {
 
 		if (IsKeyPressed(KEY_UP) && game.snake.direction.y != 1) {
 			game.snake.direction = { 0, -1 };
+			game.running = true;
 		}
 
 		if (IsKeyPressed(KEY_DOWN) && game.snake.direction.y != -1) {
 			game.snake.direction = { 0, 1 };
+			game.running = true;
 		}
 
 		if (IsKeyPressed(KEY_LEFT) && game.snake.direction.x != 1) {
 			game.snake.direction = { -1, 0 };
+			game.running = true;
 		}
 
 		if (IsKeyPressed(KEY_RIGHT) && game.snake.direction.x != -1) {
 			game.snake.direction = { 1, 0 };
+			game.running = true;
 		}
 
 		// Drawing
