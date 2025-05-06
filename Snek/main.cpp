@@ -20,10 +20,10 @@ using namespace std;
 Color SNEK_GREEN = { 173, 204, 96, 255 };
 Color SNEK_DARKGREEN = { 43, 51, 24, 255 };
 
-// grid for 750x750 pixels
+// grid for 450x450 pixels
 int cellSize = 30;
-int cellCount = 25;
-int offset = 75;
+int cellCount = 15;
+int offset = 60;
 int screenWidth = cellSize * cellCount + 2 * offset;
 int screenHeight = cellSize * cellCount + 2 * offset;
 
@@ -88,7 +88,7 @@ public:
 	}
 
 	void Reset() {
-		body = { Vector2{ 6, 9 }, Vector2{ 5, 9 }, Vector2{ 4, 9 } };
+		body = { Vector2{ 4, 4 }, Vector2{ 3, 4 }, Vector2{ 2, 4 } };
 		direction = { 1, 0 };
 	}
 };
@@ -242,8 +242,8 @@ int main() {
 		// Drawing
 		ClearBackground(SNEK_GREEN);
 		DrawRectangleLinesEx(Rectangle{ (float)offset - 5, (float)offset - 5, (float)cellSize * cellCount + 10, (float)cellSize * cellCount + 10 }, 5, SNEK_DARKGREEN);
-		DrawText("Snek", offset - 5, 20, 40, SNEK_DARKGREEN);
-		DrawText(TextFormat("Score: %i", game.score), offset - 5, offset + cellSize * cellCount + 15, 40, SNEK_DARKGREEN);
+		DrawText("Snek", offset - 5, 10, 40, SNEK_DARKGREEN);
+		DrawText(TextFormat("Score: %i", game.score), offset - 5, offset + cellSize * cellCount + 12, 40, SNEK_DARKGREEN);
 		game.Draw();
 
 		EndDrawing();
