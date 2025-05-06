@@ -52,6 +52,7 @@ class Snake {
 public:
 	deque<Vector2> body;
 	Vector2 direction;
+	bool acceptNewDirection = true;
 	bool addSegment = false;
 
 	Snake() {
@@ -81,6 +82,9 @@ public:
 			// just move the snake, but don't make it longer, so remove the last segment
 			body.pop_back();
 		}
+
+		// after moving, start accepting inputs again
+		acceptNewDirection = true;
 	}
 
 	void Reset() {
@@ -193,24 +197,30 @@ int main() {
 			game.Update();
 		}
 
-		if (IsKeyPressed(KEY_UP) && game.snake.direction.y != 1) {
-			game.snake.direction = { 0, -1 };
-			game.running = true;
-		}
+		if (game.snake.acceptNewDirection) {
+			if (IsKeyPressed(KEY_UP) && game.snake.direction.y != 1) {
+				game.snake.direction = { 0, -1 };
+				game.snake.acceptNewDirection = false; // ignore additional inputs until the next update
+				game.running = true;
+			}
 
-		if (IsKeyPressed(KEY_DOWN) && game.snake.direction.y != -1) {
-			game.snake.direction = { 0, 1 };
-			game.running = true;
-		}
+			if (IsKeyPressed(KEY_DOWN) && game.snake.direction.y != -1) {
+				game.snake.direction = { 0, 1 };
+				game.snake.acceptNewDirection = false; // ignore additional inputs until the next update
+				game.running = true;
+			}
 
-		if (IsKeyPressed(KEY_LEFT) && game.snake.direction.x != 1) {
-			game.snake.direction = { -1, 0 };
-			game.running = true;
-		}
+			if (IsKeyPressed(KEY_LEFT) && game.snake.direction.x != 1) {
+				game.snake.direction = { -1, 0 };
+				game.snake.acceptNewDirection = false; // ignore additional inputs until the next update
+				game.running = true;
+			}
 
-		if (IsKeyPressed(KEY_RIGHT) && game.snake.direction.x != -1) {
-			game.snake.direction = { 1, 0 };
-			game.running = true;
+			if (IsKeyPressed(KEY_RIGHT) && game.snake.direction.x != -1) {
+				game.snake.direction = { 1, 0 };
+				game.snake.acceptNewDirection = false; // ignore additional inputs until the next update
+				game.running = true;
+			}
 		}
 
 		// Drawing
