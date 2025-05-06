@@ -135,6 +135,7 @@ public:
 	Food food = Food(snake.body);
 	bool running = true;
 	int score = 0;
+	int highScore = 0;
 	Sound eatSound;
 	Sound gameOverSound;
 	bool showFps = false;
@@ -193,8 +194,14 @@ public:
 	void GameOver() {
 		snake.Reset();
 		food.position = food.GenerateRandomPos(snake.body);
+
 		running = false;
+
+		if (score > highScore) {
+			highScore = score;
+		}
 		score = 0;
+
 		PlaySound(gameOverSound);
 	}
 };
@@ -248,8 +255,12 @@ int main() {
 		// Drawing
 		ClearBackground(SNEK_GREEN);
 		DrawRectangleLinesEx(Rectangle{ (float)offset - 5, (float)offset - 5, (float)cellSize * cellCount + 10, (float)cellSize * cellCount + 10 }, 5, SNEK_DARKGREEN);
+
 		DrawText("Snek", offset - 5, 10, 40, SNEK_DARKGREEN);
 		DrawText(TextFormat("Score: %i", game.score), offset - 5, offset + cellSize * cellCount + 15, 30, SNEK_DARKGREEN);
+		int highScoreWidth = MeasureText(TextFormat("High Score: %i", game.highScore), 30);
+		DrawText(TextFormat("High Score: %i", game.highScore), screenWidth - offset + 5 - highScoreWidth, offset + cellSize * cellCount + 15, 30, SNEK_DARKGREEN);
+
 		game.Draw();
 
 		if (game.showFps) {
