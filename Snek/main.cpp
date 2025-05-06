@@ -137,6 +137,7 @@ public:
 	int score = 0;
 	Sound eatSound;
 	Sound gameOverSound;
+	bool showFps = false;
 
 	Game() {
 		InitAudioDevice();
@@ -239,12 +240,21 @@ int main() {
 			}
 		}
 
+		if (IsKeyPressed(KEY_P)) {
+			// Toggle FPS
+			game.showFps = !game.showFps;
+		}
+
 		// Drawing
 		ClearBackground(SNEK_GREEN);
 		DrawRectangleLinesEx(Rectangle{ (float)offset - 5, (float)offset - 5, (float)cellSize * cellCount + 10, (float)cellSize * cellCount + 10 }, 5, SNEK_DARKGREEN);
 		DrawText("Snek", offset - 5, 10, 40, SNEK_DARKGREEN);
-		DrawText(TextFormat("Score: %i", game.score), offset - 5, offset + cellSize * cellCount + 12, 40, SNEK_DARKGREEN);
+		DrawText(TextFormat("Score: %i", game.score), offset - 5, offset + cellSize * cellCount + 15, 30, SNEK_DARKGREEN);
 		game.Draw();
+
+		if (game.showFps) {
+			DrawFPS(screenWidth - 130, 20);
+		}
 
 		EndDrawing();
 	}
