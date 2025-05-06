@@ -54,6 +54,7 @@ public:
 	Vector2 direction;
 	bool acceptNewDirection = true;
 	bool addSegment = false;
+	int maxBodyLength = cellCount * cellCount;
 
 	Snake() {
 		Reset();
@@ -134,6 +135,7 @@ public:
 	Snake snake = Snake();
 	Food food = Food(snake.body);
 	bool running = true;
+	bool gameFinished = false;
 	int score = 0;
 	int highScore = 0;
 	Sound eatSound;
@@ -153,13 +155,27 @@ public:
 	}
 
 	void Draw() {
-		snake.Draw();
-		food.Draw();
+		if (!gameFinished) {
+			snake.Draw();
+			food.Draw();
+		} else {
+			int textWidth1 = MeasureText("Dude...", 20);
+			int textWidth2 = MeasureText("Go outside and touch some grass!", 20);
+			DrawText("Dude...", screenWidth / 2.f - textWidth1 / 2.f, 170, 20, SNEK_DARKGREEN);
+			DrawText("Go outside and touch some grass!", screenWidth / 2.f - textWidth2 / 2.f, 200, 20, SNEK_DARKGREEN);
+		}
 	}
 
 	void Update() {
 		if (running) {
 			snake.Update();
+			if (snake.body.size() >= snake.maxBodyLength) {
+				// The player has filled the whole screen with the snake
+				finishGame();
+				// It is important to abort here, because there is no room for new food to spawn
+				// and the next function "CheckCollisionWithFood()" would end up in an endless loop!
+				return;
+			}
 			CheckCollisionWithFood();
 			CheckCollisionWithEdges();
 			CheckCollisionWithTail();
@@ -201,6 +217,17 @@ public:
 			highScore = score;
 		}
 		score = 0;
+
+		PlaySound(gameOverSound);
+	}
+
+	void finishGame() {
+		running = false;
+		gameFinished = true;
+
+		if (score > highScore) {
+			highScore = score;
+		}
 
 		PlaySound(gameOverSound);
 	}
