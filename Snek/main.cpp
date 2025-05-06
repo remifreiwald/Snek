@@ -41,7 +41,7 @@ bool eventTriggered(double interval) {
 
 bool elementInDeque(Vector2 element, deque<Vector2> deque) {
 	for (unsigned int i = 0; i < deque.size(); i++) {
-		if (Vector2Equals(deque[i], element)) {
+		if (Vector2Equals(element, deque[i])) {
 			return true;
 		}
 	}
@@ -135,6 +135,20 @@ public:
 	Food food = Food(snake.body);
 	bool running = true;
 	int score = 0;
+	Sound eatSound;
+	Sound gameOverSound;
+
+	Game() {
+		InitAudioDevice();
+		eatSound = LoadSound("sounds/eat.wav");
+		gameOverSound = LoadSound("sounds/gameover.wav");
+	}
+
+	~Game() {
+		UnloadSound(eatSound);
+		UnloadSound(gameOverSound);
+		CloseAudioDevice();
+	}
 
 	void Draw() {
 		snake.Draw();
@@ -155,6 +169,7 @@ public:
 			food.position = food.GenerateRandomPos(snake.body);
 			snake.addSegment = true;
 			score++;
+			PlaySound(eatSound);
 		}
 	}
 
@@ -179,6 +194,7 @@ public:
 		food.position = food.GenerateRandomPos(snake.body);
 		running = false;
 		score = 0;
+		PlaySound(gameOverSound);
 	}
 };
 
