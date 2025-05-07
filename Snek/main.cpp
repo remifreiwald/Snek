@@ -20,9 +20,9 @@ using namespace std;
 Color SNEK_GREEN = { 173, 204, 96, 255 };
 Color SNEK_DARKGREEN = { 43, 51, 24, 255 };
 
-// grid for 450x450 pixels
+// grid for 420x420 pixels
 int cellSize = 30;
-int cellCount = 15;
+int cellCount = 14;
 int offset = 60;
 int screenWidth = cellSize * cellCount + 2 * offset;
 int screenHeight = cellSize * cellCount + 2 * offset;
@@ -224,6 +224,7 @@ public:
 	void finishGame() {
 		running = false;
 		gameFinished = true;
+		snake.acceptNewDirection = false;
 
 		if (score > highScore) {
 			highScore = score;
