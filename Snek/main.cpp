@@ -238,7 +238,7 @@ int main() {
 	
 	InitWindow(screenWidth, screenHeight, "Snek");
 
-	SetTargetFPS(60);
+	SetTargetFPS(120);
 
 	Game game = Game();
 
